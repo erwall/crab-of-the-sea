@@ -23,6 +23,13 @@ gdscript/warnings/unsafe_method_access=1
 gdscript/warnings/unsafe_cast=1
 gdscript/warnings/unsafe_call_argument=1
 
+[display]
+
+window/size/viewport_width=2048
+window/size/viewport_height=1024
+window/size/mode=2
+window/stretch/mode="viewport"
+
 [input]
 
 jump={
