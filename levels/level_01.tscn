@@ -12,7 +12,9 @@ background_color = Color(1, 0, 0, 1)
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_mckh2")
 
-[node name="GraphicsLayers" type="Node" parent="."]
+[node name="GraphicsLayers" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+metadata/_edit_group_ = true
 
 [node name="Background" parent="GraphicsLayers" instance=ExtResource("1_ty3hu")]
 z_index = -1
