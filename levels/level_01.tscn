@@ -1,21 +1,20 @@
-[gd_scene load_steps=5 format=4 uid="uid://dv3lqns4jx5ej"]
+[gd_scene load_steps=4 format=4 uid="uid://dv3lqns4jx5ej"]
 
 [ext_resource type="PackedScene" uid="uid://ykbjfdu153go" path="res://art/tilemaps/tile_map_layer.tscn" id="1_ty3hu"]
-[ext_resource type="Texture2D" uid="uid://b1vxgqpipshbc" path="res://icon.svg" id="2_mckh2"]
+[ext_resource type="PackedScene" uid="uid://bntx7kxmd1lfa" path="res://characters/player/player.tscn" id="3_81a5f"]
 
 [sub_resource type="Environment" id="Environment_mckh2"]
 background_mode = 1
 background_color = Color(1, 0, 0, 1)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mckh2"]
-size = Vector2(677, 649)
 
 [node name="Level01" type="Node"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_mckh2")
 
-[node name="GraphicsLayers" type="Node" parent="."]
+[node name="GraphicsLayers" type="Node2D" parent="."]
+metadata/_edit_lock_ = true
+metadata/_edit_group_ = true
 
 [node name="Background" parent="GraphicsLayers" instance=ExtResource("1_ty3hu")]
 z_index = -1
@@ -28,18 +27,8 @@ tile_map_data = PackedByteArray("AAAZAAMAAAACAAIAAAAZAAIAAAACAAEAAAAZAAEAAAACAAE
 [node name="Foreground" parent="GraphicsLayers" instance=ExtResource("1_ty3hu")]
 z_index = 1
 
-[node name="FallingObj" type="RigidBody2D" parent="."]
-position = Vector2(-1287, -2175)
+[node name="Player" parent="." instance=ExtResource("3_81a5f")]
+position = Vector2(0, -25)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="FallingObj"]
-position = Vector2(-70.5, -155.5)
-shape = SubResource("RectangleShape2D_mckh2")
-
-[node name="Sprite2D" type="Sprite2D" parent="FallingObj"]
-position = Vector2(-84, -163)
-scale = Vector2(6.14063, 5.83594)
-texture = ExtResource("2_mckh2")
-
-[node name="Camera2D" type="Camera2D" parent="FallingObj"]
-zoom = Vector2(0.1, 0.1)
-limit_left = -10000070
+[node name="Camera2D" type="Camera2D" parent="Player"]
+limit_smoothed = true
