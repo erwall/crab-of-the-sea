@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="crab-of-the-sea"
+run/main_scene="uid://dv3lqns4jx5ej"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -57,3 +58,6 @@ down={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+[layer_names]
+
+2d_physics/layer_1="Ground"
