@@ -4,7 +4,8 @@ extends CharacterBody2D
 
 const MAX_VELOCITY_WALK = 500.0
 const TERMINAL_VELOCITY = 2000.0
-const JUMP_VELOCITY = 700.0
+const JUMP_HEIGHT = 225.0
+const JUMP_TIME = 1.0
 const ACCELERATION = 2000.0
 const DECELERATION = 5000.0
 const FALL_GRAVITY_MULTIPLIER = 3.5
@@ -13,14 +14,18 @@ const FALL_GRAVITY_MULTIPLIER = 3.5
 @onready var sprite: AnimatedSprite2D = $Sprite
 
 func _physics_process(delta: float) -> void:
+	var acceleration := -up_direction * (8.0 * JUMP_HEIGHT / pow(JUMP_TIME, 2.0))
 	if not is_on_floor():
-		velocity += get_gravity() * (FALL_GRAVITY_MULTIPLIER if (velocity.y > 0) else 1.0) * delta
+		if velocity.y > 0:
+			acceleration *= FALL_GRAVITY_MULTIPLIER
+		velocity += acceleration * delta
 		velocity = velocity.clampf(-TERMINAL_VELOCITY, TERMINAL_VELOCITY)
 
 	var jumped := Input.is_action_just_pressed("jump") and is_on_floor()
 	var jump_cancelled := Input.is_action_just_released("jump") and velocity.y < 0
+	var jump_velocity := -acceleration.y * JUMP_TIME / 2.0
 	if jumped:
-		velocity.y = -JUMP_VELOCITY
+		velocity.y = jump_velocity
 	elif jump_cancelled:
 		velocity.y *= 0.5
 
