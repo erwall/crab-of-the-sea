@@ -32,3 +32,14 @@ position = Vector2(0, -25)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 limit_smoothed = true
+
+[node name="LightLayer" type="Node" parent="."]
+
+[node name="DirectionalLight2D" type="DirectionalLight2D" parent="LightLayer"]
+rotation = 0.35476
+color = Color(0.919336, 0.943319, 1, 1)
+shadow_enabled = true
+shadow_color = Color(0.0826221, 0.0493619, 0.0119499, 0)
+shadow_filter = 1
+shadow_filter_smooth = 3.5
+height = 0.2
