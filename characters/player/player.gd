@@ -39,13 +39,17 @@ func _physics_process(delta: float) -> void:
 		velocity.x += ACCELERATION * input_horizontal * delta
 		velocity.x = clampf(velocity.x, -MAX_VELOCITY_WALK, MAX_VELOCITY_WALK)
 
-	if input_horizontal:
+	move_and_slide()
+
+	_handle_animations(input_horizontal)
+
+func _handle_animations(input: float) -> void:
+	if input:
 		sprite.animation = "walk"
 	else:
 		sprite.animation = "idle"
 
-	if input_horizontal:
-		sprite.flip_h = input_horizontal < 0
-	sprite.play()
+	if input:
+		sprite.flip_h = input < 0
 
-	move_and_slide()
+	sprite.play()
