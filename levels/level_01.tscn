@@ -36,7 +36,7 @@ z_index = 1
 [node name="Player" parent="." instance=ExtResource("3_81a5f")]
 position = Vector2(0, -25)
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
+[node name="Camera2D2" type="Camera2D" parent="Player"]
 limit_smoothed = true
 
 [node name="LightLayer" type="Node" parent="."]
