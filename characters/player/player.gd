@@ -1,14 +1,29 @@
 class_name PlayableCharacter2D
 extends CharacterBody2D
 
-
-const MAX_VELOCITY_WALK = 500.0
-const TERMINAL_VELOCITY = 2000.0
-const JUMP_HEIGHT = 225.0
-const JUMP_TIME = 1.0
-const ACCELERATION = 2000.0
-const DECELERATION = 5000.0
-const FALL_GRAVITY_MULTIPLIER = 3.5
+@export_group("Movement")
+## Maximum sideways movement speed (px/s)
+@export_range(0.0, 10000.0, 1.0, "suffix:px/s") var move_velocity := 500.0
+## Sideways movement acceleration (px/s/s)
+@export_range(0.0, 10000.0, 1.0, "suffix:px/s/s") var acceleration := 2000.0
+## Sideways movement deceleration (px/s/s)
+@export_range(0.0, 10000.0, 1.0, "suffix:px/s/s") var deceleration := 5000.0
+@export_group("Jump")
+## Height of jump (px)
+@export_range(0.0, 1000.0, 1.0, "suffix:px") var jump_height := 250.0
+## Duration of a jump, from leaving the ground to landing (s)
+## [br][br]
+## [b]Note:[/b] The time set here assumes [member fall_gravity_multiplier] is 1.
+## If [member fall_gravity_multiplier] is > 1.0 the actual duration will be shorter.
+@export_range(0.0, 10.0, 0.1, "suffix:s") var jump_duration := 1.0
+@export_group("Fall")
+## Maximum speed when falling (px/s)
+@export_range(0.0, 10000.0, 1.0, "suffix:px/s") var terminal_velocity := 2000.0
+## Gravity multiplier for falling
+## [br][br]
+## Set to 1 causes the up and down motion of a jump to
+## be the same duration. Set to > 1 causes the down motion to be quicker.
+@export_range(0.0, 10.0, 0.1, "suffix:px/s") var fall_gravity_multiplier := 2.5
 
 enum CharacterState {
 	IDLE,
@@ -25,20 +40,20 @@ var state := CharacterState.IDLE
 
 func _physics_process(delta: float) -> void:
 	state = CharacterState.IDLE
-	var acceleration := -up_direction * (8.0 * JUMP_HEIGHT / pow(JUMP_TIME, 2.0))
+	var gravity := -up_direction * (8.0 * jump_height / pow(jump_duration, 2.0))
 	var falling := velocity.y > 0
 	if not is_on_floor():
 		if falling:
 			state = CharacterState.FALLING
-			acceleration *= FALL_GRAVITY_MULTIPLIER
+			gravity *= fall_gravity_multiplier
 		else:
 			state = CharacterState.RISING
-		velocity += acceleration * delta
-		velocity = velocity.clampf(-TERMINAL_VELOCITY, TERMINAL_VELOCITY)
+		velocity += gravity * delta
+		velocity = velocity.clampf(-terminal_velocity, terminal_velocity)
 
 	var jumped := Input.is_action_just_pressed("jump") and is_on_floor()
 	var jump_cancelled := Input.is_action_just_released("jump") and velocity.y < 0
-	var jump_velocity := -acceleration.y * JUMP_TIME / 2.0
+	var jump_velocity := -gravity.y * jump_duration / 2.0
 	if jumped:
 		velocity.y = jump_velocity
 		state = CharacterState.JUMPING
@@ -50,12 +65,12 @@ func _physics_process(delta: float) -> void:
 	var breaking := signf(input_horizontal) + signf(velocity.x) == 0
 	var was_idle := not velocity.x
 	if not input_horizontal:
-		velocity.x = move_toward(velocity.x, 0, ACCELERATION * delta)
+		velocity.x = move_toward(velocity.x, 0, acceleration * delta)
 	elif breaking:
-		velocity.x = move_toward(velocity.x, 0, DECELERATION * delta)
+		velocity.x = move_toward(velocity.x, 0, deceleration * delta)
 	else:
-		velocity.x += ACCELERATION * input_horizontal * delta
-		velocity.x = clampf(velocity.x, -MAX_VELOCITY_WALK, MAX_VELOCITY_WALK)
+		velocity.x += acceleration * input_horizontal * delta
+		velocity.x = clampf(velocity.x, -move_velocity, move_velocity)
 
 	if is_on_floor() and input_horizontal:
 		if was_idle:
