@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=4 uid="uid://dv3lqns4jx5ej"]
+[gd_scene load_steps=6 format=4 uid="uid://dv3lqns4jx5ej"]
 
 [ext_resource type="AudioStream" uid="uid://td8aark0bj6d" path="res://sounds/snøoggranskog.wav" id="1_81a5f"]
 [ext_resource type="PackedScene" uid="uid://ykbjfdu153go" path="res://art/tilemaps/tile_map_layer.tscn" id="1_ty3hu"]
 [ext_resource type="PackedScene" uid="uid://bntx7kxmd1lfa" path="res://characters/player/player.tscn" id="3_81a5f"]
+[ext_resource type="PackedScene" uid="uid://ddldhll1c75fe" path="res://debug/fps_counter.tscn" id="4_gg43x"]
 
 [sub_resource type="Environment" id="Environment_mckh2"]
 background_mode = 1
@@ -37,9 +38,6 @@ z_index = 1
 [node name="Player" parent="." instance=ExtResource("3_81a5f")]
 position = Vector2(0, -25)
 
-[node name="Camera2D2" type="Camera2D" parent="Player"]
-limit_smoothed = true
-
 [node name="LightLayer" type="Node" parent="."]
 
 [node name="DirectionalLight2D" type="DirectionalLight2D" parent="LightLayer"]
@@ -50,3 +48,11 @@ shadow_color = Color(0.0826221, 0.0493619, 0.0119499, 0)
 shadow_filter = 1
 shadow_filter_smooth = 3.5
 height = 0.2
+
+[node name="FpsCounter" parent="." instance=ExtResource("4_gg43x")]
+offset_left = 14.0
+offset_top = -137.0
+offset_right = 147.0
+offset_bottom = -110.0
+
+[editable path="Player"]

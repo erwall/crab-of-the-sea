@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddldhll1c75fe"]
+
+[ext_resource type="Theme" uid="uid://bf4ucbdxaemne" path="res://ui/theme/theme_bland.tres" id="1_sidcr"]
+[ext_resource type="Script" uid="uid://chuoxg7nj0rg3" path="res://debug/fps_counter.gd" id="2_sidcr"]
+
+[node name="FpsCounter" type="Label"]
+offset_right = 133.0
+offset_bottom = 27.0
+theme = ExtResource("1_sidcr")
+script = ExtResource("2_sidcr")
