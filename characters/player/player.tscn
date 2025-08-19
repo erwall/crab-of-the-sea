@@ -18,3 +18,13 @@ animation = &"idle"
 [node name="Hitbox" type="CollisionShape2D" parent="."]
 position = Vector2(6, 15)
 shape = SubResource("CapsuleShape2D_xxgcw")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.01
+drag_top_margin = 0.01
+drag_right_margin = 0.01
+drag_bottom_margin = 0.01

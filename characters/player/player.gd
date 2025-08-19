@@ -49,3 +49,13 @@ func _physics_process(delta: float) -> void:
 	sprite.play()
 
 	move_and_slide()
+	
+	
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action("move_camera_down"):
+		pass
+		
+	
+	
+	
+	
