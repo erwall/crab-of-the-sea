@@ -11,6 +11,7 @@ height = 70.0
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_508ok")
+jump_height = 200.0
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 scale = Vector2(6.25, 6.25)
@@ -21,7 +22,7 @@ animation = &"idle"
 position = Vector2(6, 15)
 shape = SubResource("CapsuleShape2D_xxgcw")
 
-[node name="CustomCamera2D" type="Camera2D" parent="." node_paths=PackedStringArray("curve")]
+[node name="Camera" type="Camera2D" parent="." node_paths=PackedStringArray("curve")]
 position_smoothing_enabled = true
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
@@ -32,10 +33,10 @@ drag_bottom_margin = 0.02
 script = ExtResource("3_exd8k")
 transition_time_back = 0.3
 screen_space_offset = 0.4
-curve = NodePath("path")
+curve = NodePath("CameraPath")
 metadata/_custom_type_script = "uid://da1hov8yk4kij"
 
-[node name="path" parent="CustomCamera2D" instance=ExtResource("5_ixbpm")]
+[node name="CameraPath" parent="Camera" instance=ExtResource("5_ixbpm")]
 visible = false
 
 [connection signal="animation_finished" from="Sprite" to="." method="_on_sprite_animation_finished"]

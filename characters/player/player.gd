@@ -37,6 +37,7 @@ enum CharacterState {
 
 var state := CharacterState.IDLE
 @onready var sprite: AnimatedSprite2D = $Sprite
+@onready var camera: CustomCamera2D = $Camera
 
 func _physics_process(delta: float) -> void:
 	state = CharacterState.IDLE
@@ -111,7 +112,6 @@ func _on_sprite_animation_finished() -> void:
 	_handle_animations(0.0)
 
 func _unhandled_input(event: InputEvent) -> void:
-	var camera := get_node("CustomCamera2D") as CustomCamera2D
 	if (event.is_action_pressed("move_camera_up")):
 		camera.move_camera_up()
 	if (event.is_action_pressed("move_camera_down")):
