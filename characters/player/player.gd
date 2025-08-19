@@ -40,7 +40,7 @@ var state := CharacterState.IDLE
 
 func _physics_process(delta: float) -> void:
 	state = CharacterState.IDLE
-	var gravity := -up_direction * (8.0 * jump_height / pow(jump_duration, 2.0))
+	var gravity := -up_direction * (8.0 * jump_height * 0.9677 / pow(jump_duration, 2.0))
 	var falling := velocity.y > 0
 	if not is_on_floor():
 		if falling:
