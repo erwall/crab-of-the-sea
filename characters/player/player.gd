@@ -113,15 +113,10 @@ func _on_sprite_animation_finished() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	var camera := get_node("CustomCamera2D") as CustomCamera2D
 	if (event.is_action_pressed("move_camera_up")):
-		camera.move_camera_up()	
+		camera.move_camera_up()
 	if (event.is_action_pressed("move_camera_down")):
-		camera.move_camera_down()	
+		camera.move_camera_down()
 	if (event.is_action_released("move_camera_up")):
-		camera.center_camera()	
+		camera.center_camera()
 	if (event.is_action_released("move_camera_down")):
-		camera.center_camera()	
-		
-	
-	
-	
-	
+		camera.center_camera()
