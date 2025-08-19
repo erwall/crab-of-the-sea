@@ -89,7 +89,7 @@ func _handle_animations(input: float) -> void:
 	var state_to_animation: Dictionary[CharacterState, String] = {
 		CharacterState.IDLE: "idle",
 		CharacterState.JUMPING: "jump-start",
-		CharacterState.RISING: "idle",
+		CharacterState.RISING: "rising",
 		CharacterState.FALLING: "fall",
 		CharacterState.LANDING: "land-start",
 		CharacterState.WALKING_START: "walk-start",

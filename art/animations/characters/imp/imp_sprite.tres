@@ -1,9 +1,10 @@
-[gd_resource type="SpriteFrames" load_steps=38 format=3 uid="uid://c24en5tycwrro"]
+[gd_resource type="SpriteFrames" load_steps=42 format=3 uid="uid://c24en5tycwrro"]
 
 [ext_resource type="Texture2D" uid="uid://uf8xjk30say" path="res://art/animations/characters/imp/imp_fall.png" id="1_d3rsm"]
 [ext_resource type="Texture2D" uid="uid://c57nom3euw2nl" path="res://art/animations/characters/imp/imp_run.png" id="2_cdijy"]
 [ext_resource type="Texture2D" uid="uid://basd5yit8jtx1" path="res://art/animations/characters/imp/imp_jump.png" id="2_cnof1"]
 [ext_resource type="Texture2D" uid="uid://bwjkq68i37ka8" path="res://art/animations/characters/imp/imp_land.png" id="3_fx7t7"]
+[ext_resource type="Texture2D" uid="uid://byynm3wbkcewb" path="res://art/animations/characters/imp/imp_rising.png" id="4_cnof1"]
 [ext_resource type="Texture2D" uid="uid://fofd27k8qqp3" path="res://art/animations/characters/imp/imp_run_start.png" id="5_theqt"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_k48q1"]
@@ -88,6 +89,18 @@ region = Rect2(32, 0, 16, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_pdsal"]
 atlas = ExtResource("3_fx7t7")
 region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fx7t7"]
+atlas = ExtResource("4_cnof1")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_theqt"]
+atlas = ExtResource("4_cnof1")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1b11m"]
+atlas = ExtResource("4_cnof1")
+region = Rect2(32, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gqopd"]
 atlas = ExtResource("2_cdijy")
@@ -196,7 +209,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"jump-start",
-"speed": 30.0
+"speed": 24.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -213,7 +226,21 @@ animations = [{
 }],
 "loop": false,
 "name": &"land-start",
-"speed": 10.0
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_fx7t7")
+}, {
+"duration": 4.0,
+"texture": SubResource("AtlasTexture_theqt")
+}, {
+"duration": 4.0,
+"texture": SubResource("AtlasTexture_1b11m")
+}],
+"loop": true,
+"name": &"rising",
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -242,7 +269,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"walk",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -256,5 +283,5 @@ animations = [{
 }],
 "loop": false,
 "name": &"walk-start",
-"speed": 15.0
+"speed": 12.0
 }]
