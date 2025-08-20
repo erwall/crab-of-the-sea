@@ -16,6 +16,7 @@ extends CharacterBody2D
 ## [b]Note:[/b] The time set here assumes [member fall_gravity_multiplier] is 1.
 ## If [member fall_gravity_multiplier] is > 1.0 the actual duration will be shorter.
 @export_range(0.0, 10.0, 0.1, "suffix:s") var jump_duration := 1.0
+## Maximum time to allow jump after walking off an edge (s)
 @export_range(0.0, 10.0, 0.01, "suffix:s") var coyote_time := 0.1
 @export_group("Fall")
 ## Maximum speed when falling (px/s)
