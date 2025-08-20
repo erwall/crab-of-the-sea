@@ -38,4 +38,8 @@ metadata/_custom_type_script = "uid://da1hov8yk4kij"
 [node name="CameraPath" parent="Camera" instance=ExtResource("5_ixbpm")]
 visible = false
 
+[node name="CoyoteTimer" type="Timer" parent="."]
+process_callback = 0
+one_shot = true
+
 [connection signal="animation_finished" from="Sprite" to="." method="_on_sprite_animation_finished"]

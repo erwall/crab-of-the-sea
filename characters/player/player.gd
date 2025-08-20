@@ -16,6 +16,7 @@ extends CharacterBody2D
 ## [b]Note:[/b] The time set here assumes [member fall_gravity_multiplier] is 1.
 ## If [member fall_gravity_multiplier] is > 1.0 the actual duration will be shorter.
 @export_range(0.0, 10.0, 0.1, "suffix:s") var jump_duration := 1.0
+@export_range(0.0, 10.0, 0.01, "suffix:s") var coyote_time := 0.1
 @export_group("Fall")
 ## Maximum speed when falling (px/s)
 @export_range(0.0, 10000.0, 1.0, "suffix:px/s") var terminal_velocity := 2000.0
@@ -39,21 +40,23 @@ var state := CharacterState.IDLE
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var camera: CustomCamera2D = $Camera
 @onready var dirt_particles: CPUParticles2D = $DirtParticles
+@onready var coyote_timer: Timer = $CoyoteTimer
 
 func _physics_process(delta: float) -> void:
 	state = CharacterState.IDLE
 	var gravity := -up_direction * (8.0 * jump_height * 0.9677 / pow(jump_duration, 2.0))
+	var applied_gravity := gravity
 	var falling := velocity.y > 0
 	if not is_on_floor():
 		if falling:
 			state = CharacterState.FALLING
-			gravity *= fall_gravity_multiplier
+			applied_gravity *= fall_gravity_multiplier
 		else:
 			state = CharacterState.RISING
-		velocity += gravity * delta
+		velocity += applied_gravity * delta
 		velocity = velocity.clampf(-terminal_velocity, terminal_velocity)
 
-	var jumped := Input.is_action_just_pressed("jump") and is_on_floor()
+	var jumped := Input.is_action_just_pressed("jump") and (is_on_floor() or not coyote_timer.is_stopped())
 	var jump_cancelled := Input.is_action_just_released("jump") and velocity.y < 0
 	var jump_velocity := -gravity.y * jump_duration / 2.0
 	if jumped:
@@ -80,7 +83,11 @@ func _physics_process(delta: float) -> void:
 		else:
 			state = CharacterState.WALKING
 
+	var was_on_floor := is_on_floor()
 	move_and_slide()
+
+	if was_on_floor and not is_on_floor() and not jumped:
+		coyote_timer.start(coyote_time)
 
 	if falling and is_on_floor():
 		state = CharacterState.LANDING
