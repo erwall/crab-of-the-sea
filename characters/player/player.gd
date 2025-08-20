@@ -85,6 +85,8 @@ func _physics_process(delta: float) -> void:
 		state = CharacterState.LANDING
 
 	_handle_animations(input_horizontal)
+	
+	handle_particles(input_horizontal)
 
 func _handle_animations(input: float) -> void:
 	var state_to_animation: Dictionary[CharacterState, String] = {
@@ -120,3 +122,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		camera.center_camera()
 	if (event.is_action_released("move_camera_down")):
 		camera.center_camera()
+
+func handle_particles(lr_direction: float) -> void:
+	# Show or hide particles
+	$DirtParticles.visible = (state == CharacterState.WALKING)
+	
+	# Set particle direction to behind the player
+	if lr_direction > 0:
+		$DirtParticles.direction.x = -1.0
+	elif lr_direction < 0:
+		$DirtParticles.direction.x = 1.0

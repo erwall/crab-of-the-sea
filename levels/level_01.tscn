@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=4 uid="uid://dv3lqns4jx5ej"]
+[gd_scene load_steps=8 format=4 uid="uid://dv3lqns4jx5ej"]
 
 [ext_resource type="AudioStream" uid="uid://td8aark0bj6d" path="res://sounds/snøoggranskog.wav" id="1_81a5f"]
 [ext_resource type="PackedScene" uid="uid://ykbjfdu153go" path="res://art/tilemaps/tile_map_layer.tscn" id="1_ty3hu"]
@@ -8,6 +8,14 @@
 [sub_resource type="Environment" id="Environment_mckh2"]
 background_mode = 1
 background_color = Color(1, 0, 0, 1)
+
+[sub_resource type="Gradient" id="Gradient_gg43x"]
+offsets = PackedFloat32Array(0.00487805, 0.663415, 1)
+colors = PackedColorArray(0, 0.337255, 0, 1, 0, 0.678431, 0, 1, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_mllcm"]
+offsets = PackedFloat32Array(0, 0.385366, 1)
+colors = PackedColorArray(1, 1, 1, 0, 0, 0.678431, 0, 1, 0, 0.337255, 0, 1)
 
 [node name="Level01" type="Node"]
 
@@ -37,6 +45,24 @@ z_index = 1
 
 [node name="Player" parent="." instance=ExtResource("3_81a5f")]
 position = Vector2(0, -25)
+
+[node name="DirtParticles" type="CPUParticles2D" parent="Player"]
+position = Vector2(-2, 46)
+amount = 6
+lifetime = 0.2
+randomness = 0.29
+emission_shape = 1
+emission_sphere_radius = 9.13
+direction = Vector2(1, -1)
+spread = 22.86
+gravity = Vector2(0, 50)
+initial_velocity_min = 100.0
+initial_velocity_max = 100.0
+scale_amount_min = 3.0
+scale_amount_max = 6.0
+color = Color(8.18223e-07, 0.338419, 2.40654e-07, 1)
+color_ramp = SubResource("Gradient_gg43x")
+color_initial_ramp = SubResource("Gradient_mllcm")
 
 [node name="LightLayer" type="Node" parent="."]
 
