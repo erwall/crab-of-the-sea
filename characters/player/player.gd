@@ -38,6 +38,7 @@ enum CharacterState {
 var state := CharacterState.IDLE
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var camera: CustomCamera2D = $Camera
+@onready var dirt_particles: CPUParticles2D = $DirtParticles
 
 func _physics_process(delta: float) -> void:
 	state = CharacterState.IDLE
@@ -85,7 +86,7 @@ func _physics_process(delta: float) -> void:
 		state = CharacterState.LANDING
 
 	_handle_animations(input_horizontal)
-	
+
 	handle_particles(input_horizontal)
 
 func _handle_animations(input: float) -> void:
@@ -125,10 +126,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func handle_particles(lr_direction: float) -> void:
 	# Show or hide particles
-	$DirtParticles.visible = (state == CharacterState.WALKING)
-	
+	dirt_particles.visible = (state == CharacterState.WALKING)
+
 	# Set particle direction to behind the player
 	if lr_direction > 0:
-		$DirtParticles.direction.x = -1.0
+		dirt_particles.direction.x = -1.0
 	elif lr_direction < 0:
-		$DirtParticles.direction.x = 1.0
+		dirt_particles.direction.x = 1.0
