@@ -68,7 +68,7 @@ color_initial_ramp = SubResource("Gradient_mllcm")
 
 [node name="DirectionalLight2D" type="DirectionalLight2D" parent="LightLayer"]
 rotation = 0.35476
-color = Color(0.919336, 0.943319, 1, 1)
+color = Color(0.987195, 0.904117, 0.658252, 1)
 shadow_enabled = true
 shadow_color = Color(0.0826221, 0.0493619, 0.0119499, 0)
 shadow_filter = 1
