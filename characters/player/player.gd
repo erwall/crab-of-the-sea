@@ -18,6 +18,8 @@ extends CharacterBody2D
 @export_range(0.0, 10.0, 0.1, "suffix:s") var jump_duration := 1.0
 ## Maximum time to allow jump after walking off an edge (s)
 @export_range(0.0, 10.0, 0.01, "suffix:s") var coyote_time := 0.1
+## Maximum time to queue a jump before landing (s)
+@export_range(0.0, 10.0, 0.01, "suffix:s") var jump_buffer := 0.2
 @export_group("Fall")
 ## Maximum speed when falling (px/s)
 @export_range(0.0, 10000.0, 1.0, "suffix:px/s") var terminal_velocity := 2000.0
@@ -37,11 +39,13 @@ enum CharacterState {
 	WALKING,
 }
 
+var jump_buffered := false
 var state := CharacterState.IDLE
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var camera: CustomCamera2D = $Camera
 @onready var dirt_particles: CPUParticles2D = $DirtParticles
 @onready var coyote_timer: Timer = $CoyoteTimer
+@onready var jump_buffer_timer: Timer = $JumpBufferTimer
 
 func _physics_process(delta: float) -> void:
 	state = CharacterState.IDLE
@@ -57,8 +61,15 @@ func _physics_process(delta: float) -> void:
 		velocity += applied_gravity * delta
 		velocity = velocity.clampf(-terminal_velocity, terminal_velocity)
 
-	var jumped := Input.is_action_just_pressed("jump") and (is_on_floor() or not coyote_timer.is_stopped())
-	var jump_cancelled := Input.is_action_just_released("jump") and velocity.y < 0
+	var jump_pressed := Input.is_action_just_pressed("jump")
+	var jump_released := Input.is_action_just_released("jump")
+	if jump_pressed and not is_on_floor():
+		jump_buffer_timer.start(jump_buffer)
+		jump_buffered = true
+	if jump_buffer_timer.is_stopped() or jump_buffered and jump_released:
+		jump_buffered = false
+	var jumped := (jump_pressed or jump_buffered) and (is_on_floor() or not coyote_timer.is_stopped())
+	var jump_cancelled := jump_released and velocity.y < 0
 	var jump_velocity := -gravity.y * jump_duration / 2.0
 	if jumped:
 		velocity.y = jump_velocity
