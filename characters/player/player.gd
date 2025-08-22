@@ -31,15 +31,11 @@ extends CharacterBody2D
 
 enum CharacterState {
 	IDLE,
-	JUMPING,
-	RISING,
-	FALLING,
-	LANDING,
-	WALKING_START,
-	WALKING,
+	JUMP,
+	FALL,
+	MOVE,
 }
 
-var jump_buffered := false
 var state := CharacterState.IDLE
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var camera: CustomCamera2D = $Camera
@@ -48,90 +44,15 @@ var state := CharacterState.IDLE
 @onready var jump_buffer_timer: Timer = $JumpBufferTimer
 
 func _physics_process(delta: float) -> void:
-	state = CharacterState.IDLE
-	var gravity := -up_direction * (8.0 * jump_height * 0.9677 / pow(jump_duration, 2.0))
-	var applied_gravity := gravity
-	var falling := velocity.y > 0
-	if not is_on_floor():
-		if falling:
-			state = CharacterState.FALLING
-			applied_gravity *= fall_gravity_multiplier
-		else:
-			state = CharacterState.RISING
-		velocity += applied_gravity * delta
-		velocity = velocity.clampf(-terminal_velocity, terminal_velocity)
-
-	var jump_pressed := Input.is_action_just_pressed("jump")
-	var jump_released := Input.is_action_just_released("jump")
-	if jump_pressed and not is_on_floor():
-		jump_buffer_timer.start(jump_buffer)
-		jump_buffered = true
-	if jump_buffer_timer.is_stopped() or jump_buffered and jump_released:
-		jump_buffered = false
-	var jumped := (jump_pressed or jump_buffered) and (is_on_floor() or not coyote_timer.is_stopped())
-	var jump_cancelled := jump_released and velocity.y < 0
-	var jump_velocity := -gravity.y * jump_duration / 2.0
-	if jumped:
-		velocity.y = jump_velocity
-		state = CharacterState.JUMPING
-	elif jump_cancelled:
-		velocity.y *= 0.2
-		state = CharacterState.RISING
-
-	var input_horizontal := Input.get_axis("left", "right")
-	var breaking := signf(input_horizontal) + signf(velocity.x) == 0
-	var was_idle := not velocity.x
-	if not input_horizontal:
-		velocity.x = move_toward(velocity.x, 0, acceleration * delta)
-	elif breaking:
-		velocity.x = move_toward(velocity.x, 0, deceleration * delta)
-	else:
-		velocity.x += acceleration * input_horizontal * delta
-		velocity.x = clampf(velocity.x, -move_velocity, move_velocity)
-
-	if is_on_floor() and input_horizontal:
-		if was_idle:
-			state = CharacterState.WALKING_START
-		else:
-			state = CharacterState.WALKING
-
-	var was_on_floor := is_on_floor()
-	move_and_slide()
-
-	if was_on_floor and not is_on_floor() and not jumped:
-		coyote_timer.start(coyote_time)
-
-	if falling and is_on_floor():
-		state = CharacterState.LANDING
-
-	_handle_animations(input_horizontal)
-
-	handle_particles(input_horizontal)
-
-func _handle_animations(input: float) -> void:
-	var state_to_animation: Dictionary[CharacterState, String] = {
-		CharacterState.IDLE: "idle",
-		CharacterState.JUMPING: "jump-start",
-		CharacterState.RISING: "rising",
-		CharacterState.FALLING: "fall",
-		CharacterState.LANDING: "land-start",
-		CharacterState.WALKING_START: "walk-start",
-		CharacterState.WALKING: "walk",
-	}
-
-	if sprite.animation.contains("start"):
-		return
-
-	sprite.animation = state_to_animation[state]
-
-	if input:
-		sprite.flip_h = input < 0
-
-	sprite.play()
-
-func _on_sprite_animation_finished() -> void:
-	sprite.animation = "idle"
-	_handle_animations(0.0)
+	match state:
+		CharacterState.IDLE:
+			_process_physics_idle(delta)
+		CharacterState.MOVE:
+			_process_physics_move(delta)
+		CharacterState.JUMP:
+			_process_physics_jump(delta)
+		CharacterState.FALL:
+			_process_physics_fall(delta)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if (event.is_action_pressed("move_camera_up")):
@@ -143,12 +64,186 @@ func _unhandled_input(event: InputEvent) -> void:
 	if (event.is_action_released("move_camera_down")):
 		camera.center_camera()
 
-func handle_particles(lr_direction: float) -> void:
-	# Show or hide particles
-	dirt_particles.visible = (state == CharacterState.WALKING)
+	if event.is_action_pressed("left"):
+		sprite.flip_h = true
+	elif event.is_action_pressed("right"):
+		sprite.flip_h = false
+
+	match state:
+		CharacterState.IDLE:
+			_process_input_idle(event)
+		CharacterState.MOVE:
+			_process_input_move(event)
+		CharacterState.JUMP:
+			_process_input_jump(event)
+		CharacterState.FALL:
+			_process_input_fall(event)
+
+func _on_sprite_animation_finished() -> void:
+	match state:
+		CharacterState.IDLE:
+			sprite.play("idle")
+		CharacterState.MOVE:
+			sprite.play("walk")
+		CharacterState.JUMP:
+			sprite.play("rise")
+		CharacterState.FALL:
+			sprite.play("fall")
+
+func _enter_idle() -> void:
+	state = CharacterState.IDLE
+	velocity = Vector2.ZERO
+	if not sprite.animation == "land":
+		sprite.play("idle")
+
+func _exit_idle() -> void:
+	pass
+
+func _process_input_idle(event: InputEvent) -> void:
+	if event.is_action_pressed('jump'):
+		_exit_idle()
+		_enter_jump()
+
+func _process_physics_idle(delta: float) -> void:
+	_process_physics_default(delta)
+	if _is_moving_sideways():
+		_exit_idle()
+		_enter_move()
+
+func _enter_move() -> void:
+	state = CharacterState.MOVE
+	if not sprite.animation == "land":
+		sprite.play("walk-start")
+	_show_particles()
+
+func _exit_move() -> void:
+	_hide_particles()
+	pass
+
+func _process_input_move(event: InputEvent) -> void:
+	if event.is_action_pressed("jump"):
+		_exit_move()
+		_enter_jump()
+
+func _process_physics_move(delta: float) -> void:
+	_process_physics_default(delta)
+	if not is_on_floor():
+		coyote_timer.start(coyote_time)
+		_exit_move()
+		_enter_fall()
+	elif not _is_moving_sideways():
+		_exit_move()
+		_enter_idle()
+
+func _enter_jump() -> void:
+	_jump()
+	state = CharacterState.JUMP
+	sprite.play("jump")
+
+func _exit_jump() -> void:
+	pass
+
+func _process_input_jump(event: InputEvent) -> void:
+	if event.is_action_pressed("jump"):
+		jump_buffer_timer.start(jump_buffer)
+	elif event.is_action_released('jump'):
+		jump_buffer_timer.stop()
+		_jump_cancel()
+
+func _process_physics_jump(delta: float) -> void:
+	_process_physics_default(delta)
+	if _is_falling():
+		_exit_jump()
+		_enter_fall()
+	elif is_on_floor():
+		_exit_jump()
+		_enter_idle()
+
+func _enter_fall() -> void:
+	state = CharacterState.FALL
+	sprite.play("fall")
+
+func _exit_fall() -> void:
+	sprite.play("land")
+	pass
+
+func _process_input_fall(event: InputEvent) -> void:
+	if event.is_action_pressed('jump'):
+		if not coyote_timer.is_stopped():
+			_exit_fall()
+			_enter_jump()
+		jump_buffer_timer.start(jump_buffer)
+	elif event.is_action_released("jump"):
+		jump_buffer_timer.stop()
+
+func _process_physics_fall(delta: float) -> void:
+	_process_physics_default(delta, _get_gravity() * fall_gravity_multiplier)
+	if is_on_floor():
+		if not jump_buffer_timer.is_stopped():
+			_exit_fall()
+			_enter_jump()
+		elif _is_moving_sideways():
+			_exit_fall()
+			_enter_move()
+		else:
+			_exit_fall()
+			_enter_idle()
+
+func _process_physics_default(delta: float, gravity: Vector2 = _get_gravity()) -> void:
+	if not is_on_floor():
+		velocity += gravity * delta
+		velocity = velocity.clampf(-terminal_velocity, terminal_velocity)
+	_is_moving_sideways()
+	var input_sideways := _get_sideways_movement_input()
+	var breaking := signf(input_sideways) + signf(velocity.x) == 0
+	if not input_sideways:
+		velocity.x = move_toward(velocity.x, 0, acceleration * delta)
+	elif breaking:
+		velocity.x = move_toward(velocity.x, 0, deceleration * delta)
+	else:
+		velocity.x += acceleration * input_sideways * delta
+		velocity.x = clampf(velocity.x, -move_velocity, move_velocity)
+
+	move_and_slide()
+
+func _get_sideways_movement_input() -> float:
+	return Input.get_axis("left", "right")
+
+func _is_moving_sideways() -> bool:
+	return abs(velocity.x) > 0
+
+func _is_rising() -> bool:
+	return velocity.y < 0
+
+func _is_falling() -> bool:
+	return velocity.y > 0
+
+func _is_facing_right() -> bool:
+	return not sprite.flip_h
+
+func _jump() -> void:
+	velocity.y = -_get_gravity().y * jump_duration / 2.0
+	state = CharacterState.JUMP
+	coyote_timer.stop()
+	jump_buffer_timer.stop()
+
+func _jump_cancel() -> void:
+	velocity.y *= 0.2
+
+func _get_gravity() -> Vector2:
+	return -up_direction * (8.0 * jump_height * 0.9677 / pow(jump_duration, 2.0))
+
+func _hide_particles() -> void:
+	dirt_particles.hide()
+
+func _show_particles() -> void:
+	var lr_direction := _get_sideways_movement_input()
 
 	# Set particle direction to behind the player
 	if lr_direction > 0:
 		dirt_particles.direction.x = -1.0
 	elif lr_direction < 0:
 		dirt_particles.direction.x = 1.0
+
+	# Show or hide particles
+	dirt_particles.show()
