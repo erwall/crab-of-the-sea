@@ -20,6 +20,13 @@ extends CharacterBody2D
 @export_range(0.0, 10.0, 0.01, "suffix:s") var coyote_time := 0.1
 ## Maximum time to queue a jump before landing (s)
 @export_range(0.0, 10.0, 0.01, "suffix:s") var jump_buffer := 0.2
+@export_group("Wall slide")
+## Wall slide maximum velocity (px/s)[br]
+## The lesser of [member terminal_velocity] and [member wall_slide_velocity] will be applied
+@export_range(0.0, 10000.0, 0.1, "suffix:px/s") var wall_slide_velocity := 500.0
+## Wall slide jump angle (degrees)[br]
+## 0 degrees is parellel to wall, 90 degrees is perpendicular to wall
+@export_range(0.0, 90.0, 0.1, "degrees") var wall_jump_angle := 45.0
 @export_group("Fall")
 ## Maximum speed when falling (px/s)
 @export_range(0.0, 10000.0, 1.0, "suffix:px/s") var terminal_velocity := 2000.0
@@ -34,6 +41,7 @@ enum CharacterState {
 	JUMP,
 	FALL,
 	MOVE,
+	WALL_SLIDE,
 }
 
 var state := CharacterState.IDLE
@@ -53,6 +61,8 @@ func _physics_process(delta: float) -> void:
 			_process_physics_jump(delta)
 		CharacterState.FALL:
 			_process_physics_fall(delta)
+		CharacterState.WALL_SLIDE:
+			_process_physics_wall_slide(delta)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if (event.is_action_pressed("move_camera_up")):
@@ -78,6 +88,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_process_input_jump(event)
 		CharacterState.FALL:
 			_process_input_fall(event)
+		CharacterState.WALL_SLIDE:
+			_process_input_wall_slide(event)
 
 func _on_sprite_animation_finished() -> void:
 	match state:
@@ -88,6 +100,8 @@ func _on_sprite_animation_finished() -> void:
 		CharacterState.JUMP:
 			sprite.play("rise")
 		CharacterState.FALL:
+			sprite.play("fall")
+		CharacterState.WALL_SLIDE:
 			sprite.play("fall")
 
 func _enter_idle() -> void:
@@ -193,6 +207,40 @@ func _process_physics_fall(delta: float) -> void:
 		else:
 			_exit_fall()
 			_enter_idle()
+	elif is_on_wall():
+		if not jump_buffer_timer.is_stopped():
+			_exit_fall()
+			_enter_jump()
+			_wall_jump()
+		else:
+			_exit_fall()
+			_enter_wall_slide()
+
+func _enter_wall_slide() -> void:
+	state = CharacterState.WALL_SLIDE
+	sprite.play("fall")
+
+func _exit_wall_slide() -> void:
+	pass
+
+func _process_input_wall_slide(event: InputEvent) -> void:
+	if event.is_action_pressed('jump'):
+		_wall_jump()
+	if event.is_action_released('jump'):
+		_jump_cancel()
+
+func _process_physics_wall_slide(delta: float) -> void:
+	_process_physics_default(delta, _get_gravity())
+	velocity.y = clampf(velocity.y, -terminal_velocity, wall_slide_velocity)
+	if is_on_floor():
+		_exit_wall_slide()
+		_enter_idle()
+	elif not is_on_wall():
+		_exit_wall_slide()
+		if _is_falling():
+			_enter_fall()
+		else:
+			_enter_jump()
 
 func _process_physics_default(delta: float, gravity: Vector2 = _get_gravity()) -> void:
 	if not is_on_floor():
@@ -231,6 +279,14 @@ func _jump() -> void:
 	coyote_timer.stop()
 	jump_buffer_timer.stop()
 	sprite.play("jump")
+
+func _wall_jump() -> void:
+	var collision := get_last_slide_collision()
+	if not collision:
+		return
+	var jump_direction := collision.get_normal().x
+	var jump_velocity := -_get_gravity() * jump_duration / 2.0
+	velocity = jump_velocity.rotated(jump_direction * deg_to_rad(wall_jump_angle))
 
 func _jump_cancel() -> void:
 	velocity.y *= 0.2
