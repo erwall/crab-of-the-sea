@@ -103,6 +103,7 @@ func _process_input_idle(event: InputEvent) -> void:
 	if event.is_action_pressed('jump'):
 		_exit_idle()
 		_enter_jump()
+		_jump()
 
 func _process_physics_idle(delta: float) -> void:
 	_process_physics_default(delta)
@@ -124,6 +125,7 @@ func _process_input_move(event: InputEvent) -> void:
 	if event.is_action_pressed("jump"):
 		_exit_move()
 		_enter_jump()
+		_jump()
 
 func _process_physics_move(delta: float) -> void:
 	_process_physics_default(delta)
@@ -136,9 +138,7 @@ func _process_physics_move(delta: float) -> void:
 		_enter_idle()
 
 func _enter_jump() -> void:
-	_jump()
 	state = CharacterState.JUMP
-	sprite.play("jump")
 
 func _exit_jump() -> void:
 	pass
@@ -158,6 +158,9 @@ func _process_physics_jump(delta: float) -> void:
 	elif is_on_floor():
 		_exit_jump()
 		_enter_idle()
+	elif is_on_wall():
+		_exit_fall()
+		_enter_wall_slide()
 
 func _enter_fall() -> void:
 	state = CharacterState.FALL
@@ -172,6 +175,7 @@ func _process_input_fall(event: InputEvent) -> void:
 		if not coyote_timer.is_stopped():
 			_exit_fall()
 			_enter_jump()
+			_jump()
 		jump_buffer_timer.start(jump_buffer)
 	elif event.is_action_released("jump"):
 		jump_buffer_timer.stop()
@@ -182,6 +186,7 @@ func _process_physics_fall(delta: float) -> void:
 		if not jump_buffer_timer.is_stopped():
 			_exit_fall()
 			_enter_jump()
+			_jump()
 		elif _is_moving_sideways():
 			_exit_fall()
 			_enter_move()
@@ -223,9 +228,9 @@ func _is_facing_right() -> bool:
 
 func _jump() -> void:
 	velocity.y = -_get_gravity().y * jump_duration / 2.0
-	state = CharacterState.JUMP
 	coyote_timer.stop()
 	jump_buffer_timer.stop()
+	sprite.play("jump")
 
 func _jump_cancel() -> void:
 	velocity.y *= 0.2
