@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=42 format=3 uid="uid://c24en5tycwrro"]
+[gd_resource type="SpriteFrames" load_steps=50 format=3 uid="uid://c24en5tycwrro"]
 
 [ext_resource type="Texture2D" uid="uid://uf8xjk30say" path="res://art/animations/characters/imp/imp_fall.png" id="1_d3rsm"]
 [ext_resource type="Texture2D" uid="uid://c57nom3euw2nl" path="res://art/animations/characters/imp/imp_run.png" id="2_cdijy"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://bwjkq68i37ka8" path="res://art/animations/characters/imp/imp_land.png" id="3_fx7t7"]
 [ext_resource type="Texture2D" uid="uid://byynm3wbkcewb" path="res://art/animations/characters/imp/imp_rising.png" id="4_cnof1"]
 [ext_resource type="Texture2D" uid="uid://fofd27k8qqp3" path="res://art/animations/characters/imp/imp_run_start.png" id="5_theqt"]
+[ext_resource type="Texture2D" uid="uid://bmd68bpiy2q6w" path="res://art/animations/characters/imp/imp_wall_slide.png" id="7_fx7t7"]
+[ext_resource type="Texture2D" uid="uid://c8u7dnegca5x1" path="res://art/animations/characters/imp/imp_wall_jump.png" id="7_theqt"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_k48q1"]
 atlas = ExtResource("1_d3rsm")
@@ -146,6 +148,30 @@ region = Rect2(16, 0, 16, 16)
 atlas = ExtResource("5_theqt")
 region = Rect2(32, 0, 16, 16)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_r6pd0"]
+atlas = ExtResource("7_theqt")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mgwre"]
+atlas = ExtResource("7_theqt")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5mtfm"]
+atlas = ExtResource("7_theqt")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uiy3r"]
+atlas = ExtResource("7_fx7t7")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vxoka"]
+atlas = ExtResource("7_fx7t7")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ervyc"]
+atlas = ExtResource("7_fx7t7")
+region = Rect2(32, 0, 16, 16)
+
 [resource]
 animations = [{
 "frames": [{
@@ -284,4 +310,32 @@ animations = [{
 "loop": false,
 "name": &"walk-start",
 "speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r6pd0")
+}, {
+"duration": 0.5,
+"texture": SubResource("AtlasTexture_mgwre")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5mtfm")
+}],
+"loop": true,
+"name": &"wall-jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uiy3r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vxoka")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ervyc")
+}],
+"loop": true,
+"name": &"wall-slide",
+"speed": 5.0
 }]

@@ -218,7 +218,7 @@ func _process_physics_fall(delta: float) -> void:
 
 func _enter_wall_slide() -> void:
 	state = CharacterState.WALL_SLIDE
-	sprite.play("fall")
+	sprite.play("wall-slide")
 
 func _exit_wall_slide() -> void:
 	pass
@@ -287,6 +287,7 @@ func _wall_jump() -> void:
 	var jump_direction := collision.get_normal().x
 	var jump_velocity := -_get_gravity() * jump_duration / 2.0
 	velocity = jump_velocity.rotated(jump_direction * deg_to_rad(wall_jump_angle))
+	sprite.play("wall-jump")
 
 func _jump_cancel() -> void:
 	velocity.y *= 0.2
