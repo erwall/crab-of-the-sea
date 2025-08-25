@@ -193,7 +193,7 @@ func _process_physics_default(delta: float, gravity: Vector2 = _get_gravity()) -
 	if not is_on_floor():
 		velocity += gravity * delta
 		velocity = velocity.clampf(-terminal_velocity, terminal_velocity)
-	_is_moving_sideways()
+
 	var input_sideways := _get_sideways_movement_input()
 	var breaking := signf(input_sideways) + signf(velocity.x) == 0
 	if not input_sideways:
