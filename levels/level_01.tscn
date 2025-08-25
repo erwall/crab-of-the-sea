@@ -47,6 +47,7 @@ z_index = 1
 position = Vector2(0, -25)
 
 [node name="DirtParticles" type="CPUParticles2D" parent="Player"]
+visible = false
 position = Vector2(-2, 46)
 amount = 6
 lifetime = 0.2
