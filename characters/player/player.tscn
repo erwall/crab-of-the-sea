@@ -6,8 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://kohjnen47jd1" path="res://curves/ease_in_ease_out_path.tscn" id="5_ixbpm"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xxgcw"]
-radius = 18.0
-height = 70.0
+radius = 24.0
+height = 76.0
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_508ok")
@@ -18,7 +18,7 @@ sprite_frames = ExtResource("2_xxgcw")
 animation = &"idle"
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
-position = Vector2(6, 15)
+position = Vector2(3, 11)
 shape = SubResource("CapsuleShape2D_xxgcw")
 
 [node name="Camera" type="Camera2D" parent="." node_paths=PackedStringArray("curve")]
