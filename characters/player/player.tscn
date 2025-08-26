@@ -18,7 +18,7 @@ sprite_frames = ExtResource("2_xxgcw")
 animation = &"idle"
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
-position = Vector2(3, 11)
+position = Vector2(3, 13)
 shape = SubResource("CapsuleShape2D_xxgcw")
 
 [node name="Camera" type="Camera2D" parent="." node_paths=PackedStringArray("curve")]
